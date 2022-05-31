@@ -201,7 +201,7 @@ async function initLoadingArray () {
 function loadArrayQ () {
     return new Promise((resolve, reject) => {
         Promise.all(queue2.map((q, index) => {
-            if (index < 150) {
+            if (index < 50) {
                 return initThirdWorker(queue2.shift(), index)
             }
 
@@ -224,7 +224,7 @@ function init () {
             await initLoadingArray();
 
             workers = []
-            AMOUNT = 150;
+            AMOUNT = 50;
 
             createWorkers("./workerThread.js")
 
