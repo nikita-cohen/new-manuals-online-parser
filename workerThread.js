@@ -22,4 +22,5 @@ function getData(obj) {
 parentPort.on('message', async (message) => {
     const data = await getData(message);
     message?.messagePort?.postMessage({hrefs : data, message : "done"});
+    process.exit(0);
 });
