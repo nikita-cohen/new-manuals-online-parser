@@ -152,6 +152,8 @@ function init () {
 
             await initLoadingArray();
 
+            console.log(queue);
+
             await initLoadingArrayQ();
 
             console.log(afterQueue);
