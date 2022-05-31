@@ -43,7 +43,7 @@ function getSecondData(obj) {
         const elementArray = [];
 
         for (let i = 0; i < element.length; i++) {
-            elementArray.push(obj.url.slice(0, -1) + $(element[i]).children("a").attr('href'));
+            elementArray.push("manualsonline.com/" + $(element[i]).children("a").attr('href'));
         }
 
         console.log("ok")
