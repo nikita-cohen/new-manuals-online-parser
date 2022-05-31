@@ -80,10 +80,10 @@ function initWorker(url , idx) {
 
         worker.postMessage({url, host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
 
-        channels.port2.on('message', (message) => {
+        channels.port2.on('message', async (message) => {
             if (message.message === "done") {
                 queue = [...queue, ...message.hrefs];
-
+                await worker.terminate();
             }
             resolve(message);
         });
@@ -98,7 +98,7 @@ function initWorker(url , idx) {
 }
 
 async function initWorkerForQueue(url, idx) {
-    return new Promise((resolve, reject) => {
+    return new Promise( (resolve, reject) => {
 
         console.log("ok" + idx);
         count++;
@@ -107,10 +107,11 @@ async function initWorkerForQueue(url, idx) {
 
         worker.postMessage({url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
 
-        channels.port2.on('message', (message) => {
+        channels.port2.on('message', async (message) => {
             if (message.message === "done") {
                 console.log(message.message)
                 afterQueue = [...afterQueue, ...message.hrefs];
+                await worker.terminate();
             }
             resolve(message);
         });
