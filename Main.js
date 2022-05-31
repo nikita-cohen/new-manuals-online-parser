@@ -139,17 +139,18 @@ function initWorker(url , idx) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
-                }
-            }
-
-            if (message.message === "done3") {
-                console.log(queue2.length)
-                if (queue2.length > 0) {
-                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
-                } else {
                     resolve(message);
                 }
             }
+
+            // if (message.message === "done3") {
+            //     console.log(queue2.length)
+            //     if (queue2.length > 0) {
+            //         worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+            //     } else {
+            //         resolve(message);
+            //     }
+            // }
         });
 
 
