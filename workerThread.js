@@ -55,10 +55,8 @@ function getSecondData(obj) {
 
 function getThirdData(obj) {
     return new Promise(async (resolve, reject) =>  {
-        let data;
         try {
-            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
-        } catch (e) {
+            let data;
             try {
                 data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
             } catch (e) {
@@ -68,22 +66,29 @@ function getThirdData(obj) {
                     try {
                         data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                     } catch (e) {
-                        data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                        try {
+                            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                        } catch (e) {
+                            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                        }
                     }
+
                 }
-
             }
+
+            const $ = cheerio.load(data.data);
+            const objToInsert = {};
+
+            const brand = $(`#brands-list > div.brands > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
+            const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
+
+
+            console.log(brand[0], category[0])
+            resolve({message : "done3"});
+
+        } catch (e) {
+            console.error("eeee", e)
         }
-
-        const $ = cheerio.load(data.data);
-        const objToInsert = {};
-
-        const brand = $(`#brands-list > div.brands > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
-        const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
-
-
-        console.log(brand[0], category[0])
-        resolve({message : "done3"});
     })
 
 }
