@@ -91,12 +91,13 @@ function initWorker(url , idx) {
                 queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                } else {
+                    resolve(message)
                 }
                 // if (queue2.length > 0) {
                 //     worker.postMessage({message : "second", url : queue2.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
                 // }
             }
-            resolve(message);
         });
 
         worker.on('error', error => {
