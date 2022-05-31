@@ -95,16 +95,15 @@ function initWorker(url , idx) {
     })
 }
 
-async function initWorkerForQueue(url) {
+async function initWorkerForQueue(url, idx) {
     return new Promise((resolve, reject) => {
 
-        const worker = new Worker('./workerThreadForQueue', {
-            workerData : {url, proxy : hostObj}
-        })
+        const {worker, channels} = workers[idx];
 
-        worker.on('message', (message) => {
+        worker.postMessage({url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
+
+        channels.port2.on('message', (message) => {
             if (message.message === "done") {
-                console.log(message.hrefs)
                 afterQueue = [...afterQueue, ...message.hrefs];
             }
             resolve(message);
@@ -149,11 +148,14 @@ function init () {
         try {
             console.log('listening port 3006');
             createProxyHost();
-            createWorkers("./workerThread");
+            createWorkers("./workerThread.js");
 
             await initLoadingArray();
 
-            console.log(queue);
+            workers = [];
+            AMOUNT = queue.length;
+
+            createWorkers("./workerThreadForQueue.js")
 
             await initLoadingArrayQ();
 
