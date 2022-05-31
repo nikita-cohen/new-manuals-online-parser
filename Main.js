@@ -93,6 +93,7 @@ function initWorker(url , idx) {
                 if (queue.length > 0) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
+                    console.log(queue2)
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 }
             }
