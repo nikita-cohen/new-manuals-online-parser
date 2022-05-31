@@ -43,7 +43,7 @@ function getSecondData(obj) {
         const elementArray = [];
 
         for (let i = 0; i < element.length; i++) {
-            elementArray.push("manualsonline.com/" + $(element[i]).children("a").attr('href'));
+            elementArray.push("manualsonline.com" + $(element[i]).children("a").attr('href'));
         }
 
         console.log("ok")
@@ -59,7 +59,6 @@ parentPort.on('message', async (message) => {
     }
     if (message.message === "second") {
         const data = await getSecondData(message);
-        console.log(data)
         message?.messagePort?.postMessage(data);
     }
 });

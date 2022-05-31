@@ -102,26 +102,9 @@ function initWorker(url , idx) {
         });
 
         channels.port1.on('message', async (message) => {
-            console.log(message.message)
-            if (message.message === "done") {
-                queue = [...queue, ...message.hrefs];
-                if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port1 }, [channels.port1]);
-                }
-            }
-
-            if (message.message === "done2") {
-                queue2 = [...queue2, ...message.hrefs];
-                if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port1}, [channels.port1]);
-                } else {
-                    resolve(message)
-                }
-                // if (queue2.length > 0) {
-                //     worker.postMessage({message : "second", url : queue2.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
-                // }
-            }
+            console.log("message", message);
         });
+
 
         worker.on('error', error => {
             reject(error);
