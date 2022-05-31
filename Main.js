@@ -91,9 +91,9 @@ function initWorker(url , idx) {
         worker.on('error', error => {
             reject(error);
         })
-        worker.on("exit", (code) => {
-            if (code !== 0) reject(new Error("something go wrong"));
-        })
+        // worker.on("exit", (code) => {
+        //     if (code !== 0) reject(new Error("something go wrong"));
+        // })
     })
 }
 
@@ -119,9 +119,9 @@ async function initWorkerForQueue(url, idx) {
         worker.on('error', error => {
             reject(error);
         })
-        worker.on("exit", (code) => {
-            console.log("exit", code)
-        })
+        // worker.on("exit", (code) => {
+        //     console.log("exit", code)
+        // })
     })
 }
 
