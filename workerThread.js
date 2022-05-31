@@ -46,6 +46,7 @@ function getSecondData(obj) {
             elementArray.push(obj.url.slice(0, -1) + $(element[i]).children("a").attr('href'));
         }
 
+        console.log("ok")
         resolve({hrefs : elementArray, message : "done2"});
     })
 
