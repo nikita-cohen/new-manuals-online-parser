@@ -82,6 +82,7 @@ function initWorker(url , idx) {
         channels.port2.on('message', (message) => {
             if (message.message === "done") {
                 queue = [...queue, ...message.hrefs];
+
             }
             resolve(message);
         });
@@ -116,7 +117,7 @@ async function initWorkerForQueue(url, idx) {
             reject(error);
         })
         worker.on("exit", (code) => {
-            if (code !== 0) reject(new Error("something go wrong"));
+            console.log("exit", code)
         })
     })
 }
