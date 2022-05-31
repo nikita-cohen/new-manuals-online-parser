@@ -4,7 +4,7 @@ const cheerio = require("cheerio");
 
 function getFirstData(obj) {
     return new Promise(async (resolve, reject) => {
-        let data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * hostObj.length)]);
+        let data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
 
         const $ = cheerio.load(data.data);
 
