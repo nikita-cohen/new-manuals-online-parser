@@ -91,7 +91,7 @@ function initWorker(url , idx) {
             reject(error);
         })
         worker.on("exit", (code) => {
-            if (code !== 0) reject(new Error("something go wrong"));
+            console.log("exit", code)
         })
     })
 }
