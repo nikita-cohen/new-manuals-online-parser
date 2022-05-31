@@ -22,6 +22,7 @@ function getFirstData(obj) {
 function getSecondData(obj) {
     return new Promise(async (resolve, reject) =>  {
         let data;
+
         try {
             data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
         } catch (e) {
@@ -96,6 +97,7 @@ parentPort.on('message', async (message) => {
 
     if (message.message === "third") {
         const data = await getThirdData(message);
+        console.log(data);
         parentPort.postMessage(data);
     }
 });

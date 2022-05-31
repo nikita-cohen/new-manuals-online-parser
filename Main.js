@@ -92,7 +92,7 @@ function initWorker(url , idx) {
                 queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
-                } else if (queue2.length > 0) {
+                } else {
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 }
             }
