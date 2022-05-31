@@ -28,7 +28,9 @@ async function getData(obj) {
             elementArray.push(obj.url.slice(0, -1) + $(element[i]).children("a").attr('href'));
         }
 
-        parentPort.postMessage({hrefs : elementArray, message : "done"});
+        console.log(elementArray)
+
+        //parentPort.postMessage({hrefs : elementArray, message : "done"});
 }
 
 getData(workerData).then();
