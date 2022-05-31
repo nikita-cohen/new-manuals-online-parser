@@ -5,7 +5,6 @@ const path = require("path");
 const express = require('express');
 const app = express();
 
-let count = 0;
 let AMOUNT = 20;
 let workers = [];
 const data = [
@@ -30,7 +29,7 @@ const data = [
     "http://tv.manualsonline.com/",
     "http://videogame.manualsonline.com/"];
 let queue = [];
-let afterQueue= [];
+let queue2 = [];
 let userAgent = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246', 'Accept-Language' : '*'}
     , {'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36", 'Accept-Language' : '*'},
     {'User-Agent' : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9", 'Accept-Language' : '*'},
@@ -78,12 +77,24 @@ function initWorker(url , idx) {
     return new Promise((resolve, reject) => {
         const {worker, channels} = workers[idx];
 
-        worker.postMessage({url, host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+        worker.postMessage({message : "first", url, host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
 
         channels.port2.on('message', async (message) => {
             if (message.message === "done") {
                 queue = [...queue, ...message.hrefs];
-                await worker.terminate();
+                if (queue.length > 0) {
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                }
+            }
+
+            if (message.message === "done2") {
+                queue2 = [...queue2, ...message.hrefs];
+                if (queue.length > 0) {
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                }
+                // if (queue2.length > 0) {
+                //     worker.postMessage({message : "second", url : queue2.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                // }
             }
             resolve(message);
         });
@@ -91,39 +102,13 @@ function initWorker(url , idx) {
         worker.on('error', error => {
             reject(error);
         })
-        // worker.on("exit", (code) => {
-        //     if (code !== 0) reject(new Error("something go wrong"));
-        // })
-    })
-}
 
-async function initWorkerForQueue(url, idx) {
-    return new Promise( (resolve, reject) => {
-
-        console.log("ok" + idx);
-        count++;
-
-        const {worker, channels} = workers[idx];
-
-        worker.postMessage({url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
-
-        channels.port2.on('message', async (message) => {
-            if (message.message === "done") {
-                console.log(message.message)
-                afterQueue = [...afterQueue, ...message.hrefs];
-                await worker.terminate();
-            }
-            resolve(message);
-        });
-
-        worker.on('error', error => {
-            reject(error);
+        worker.on("exit", (code) => {
+            if (code !== 0) reject(new Error("something go wrong"));
         })
-        // worker.on("exit", (code) => {
-        //     console.log("exit", code)
-        // })
     })
 }
+
 
 function loadArray () {
     return new Promise((resolve, reject) => {
@@ -137,20 +122,6 @@ async function initLoadingArray () {
     console.timeEnd('image_array');
 }
 
-function loadArrayQ () {
-    return new Promise((resolve, reject) => {
-        Promise.all(queue.map(initWorkerForQueue)).then(resolve).catch(reject);
-    });
-}
-
-async function initLoadingArrayQ () {
-    console.time('image_array');
-    console.log("start");
-    await loadArrayQ();
-    console.timeEnd('image_array');
-}
-
-
 function init () {
     app.listen(3006, async() => {
         try {
@@ -159,18 +130,9 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
-            console.log("one",workers.length)
 
-            workers = [];
-            AMOUNT = queue.length;
+            console.log(queue2)
 
-            createWorkers("./workerThreadForQueue.js")
-
-            console.log(queue.length)
-            console.log("two", workers.length)
-            await initLoadingArrayQ();
-
-            console.log(afterQueue);
         }
         catch(e) {
             console.log('e', e);
