@@ -98,6 +98,7 @@ function initWorker(url , idx) {
             }
 
             if (message.message === "done3") {
+                console.log(queue2.length)
                 if (queue2.length > 0) {
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 } else {
