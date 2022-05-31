@@ -80,17 +80,18 @@ function initWorker(url , idx) {
         worker.postMessage({message : "first", url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
 
         channels.port2.on('message', async (message) => {
+            console.log(message.message)
             if (message.message === "done") {
                 queue = [...queue, ...message.hrefs];
                 if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port2 }, [channels.port2]);
                 }
             }
 
             if (message.message === "done2") {
                 queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port2}, [channels.port2]);
                 } else {
                     resolve(message)
                 }

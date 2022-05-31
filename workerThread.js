@@ -15,7 +15,7 @@ function getFirstData(obj) {
             hrefArray.push(obj.url.slice(0, -1) + $(href[i]).children("a").attr('href'));
         }
 
-        resolve(hrefArray);
+        resolve({hrefs : hrefArray, message : "done"});
     })
 }
 
@@ -45,7 +45,6 @@ function getSecondData(obj) {
         for (let i = 0; i < element.length; i++) {
             elementArray.push(obj.url.slice(0, -1) + $(element[i]).children("a").attr('href'));
         }
-        console.log("ok")
 
         resolve({hrefs : elementArray, message : "done2"});
     })
@@ -61,5 +60,4 @@ parentPort.on('message', async (message) => {
         const data = await getSecondData(message);
         message?.messagePort?.postMessage(data);
     }
-
 });
