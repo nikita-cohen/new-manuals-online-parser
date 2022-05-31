@@ -77,17 +77,25 @@ function getThirdData(obj) {
             }
 
             const $ = cheerio.load(data.data);
-            const objToInsert = {};
 
             const brand = $(`#brands-list > div.brands > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
             const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
 
+            const finalObject = $("div.col-md-8.col-sm-8.col-xs-7 > h5");
+            const finalObjectsArray = [];
 
-            console.log({brand, category})
+            for (let i = 0; i < finalObject.length; i++) {
+                finalObjectsArray.push({brand, category, "url":  $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()});
+            }
+
+            finalObjectsArray.forEach(obj => {
+                console.log(obj);
+            })
+
             resolve({message : "done3"});
 
         } catch (e) {
-            console.error("eeee", e)
+            resolve({message : "done3"});
         }
     })
 
