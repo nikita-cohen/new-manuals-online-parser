@@ -104,6 +104,7 @@ async function initWorkerForQueue(url, idx) {
 
         channels.port2.on('message', (message) => {
             if (message.message === "done") {
+                console.log(message.message)
                 afterQueue = [...afterQueue, ...message.hrefs];
             }
             resolve(message);
