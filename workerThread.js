@@ -52,6 +52,38 @@ function getSecondData(obj) {
 
 }
 
+function getThirdData(obj) {
+    return new Promise(async (resolve, reject) =>  {
+        let data;
+        try {
+            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+        } catch (e) {
+            try {
+                data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+            } catch (e) {
+                try {
+                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                } catch (e) {
+                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                }
+
+            }
+        }
+
+        const $ = cheerio.load(data.data);
+        const obj = {};
+
+        const brand = $(`#brands-list > div.brands > ul > li`);
+        const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`);
+
+
+        console.log(brand[0], category[0])
+        resolve({message : "done3"});
+    })
+
+}
+
+
 parentPort.on('message', async (message) => {
     if (message.message === "first") {
         const data = await getFirstData(message);
@@ -59,6 +91,11 @@ parentPort.on('message', async (message) => {
     }
     if (message.message === "second") {
         const data = await getSecondData(message);
+        parentPort.postMessage(data);
+    }
+
+    if (message.message === "third") {
+        const data = await getThirdData(message);
         parentPort.postMessage(data);
     }
 });

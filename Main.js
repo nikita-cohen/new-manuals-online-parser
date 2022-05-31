@@ -92,12 +92,17 @@ function initWorker(url , idx) {
                 queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
-                } else {
-                    resolve(message)
+                } else if (queue2.length > 0) {
+                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 }
-                // if (queue2.length > 0) {
-                //     worker.postMessage({message : "second", url : queue2.shift(), host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
-                // }
+            }
+
+            if (message.message === "done3") {
+                if (queue2.length > 0) {
+                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+                } else {
+                    resolve(message);
+                }
             }
         });
 
@@ -133,9 +138,6 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
-
-            console.log(queue2)
-
         }
         catch(e) {
             console.log('e', e);
