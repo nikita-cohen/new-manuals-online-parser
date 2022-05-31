@@ -19,10 +19,7 @@ async function getData(obj) {
         }
     }
 
-
         const $ = cheerio.load(data.data);
-
-        console.log(data.data)
 
         const element = $(`h5.seeprices-header`);
         const elementArray = [];
@@ -35,10 +32,3 @@ async function getData(obj) {
 }
 
 getData(workerData).then();
-
-
-
-// parentPort.on('message', async (message) => {
-//
-//     message?.messagePort?.postMessage();
-// });

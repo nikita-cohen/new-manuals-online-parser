@@ -104,7 +104,6 @@ async function initWorkerForQueue(url) {
 
         worker.on('message', (message) => {
             if (message.message === "done") {
-                console.log(message)
                 afterQueue = [...afterQueue, ...message.hrefs];
             }
             resolve(message);
@@ -131,6 +130,18 @@ async function initLoadingArray () {
     console.timeEnd('image_array');
 }
 
+function loadArrayQ () {
+    return new Promise((resolve, reject) => {
+        Promise.all(queue.map(initWorkerForQueue)).then(resolve).catch(reject);
+    });
+}
+
+async function initLoadingArrayQ () {
+    console.time('image_array');
+    await loadArrayQ();
+    console.timeEnd('image_array');
+}
+
 
 function init () {
     app.listen(3006, async() => {
@@ -141,11 +152,9 @@ function init () {
 
             await initLoadingArray();
 
-            for (const que of queue) {
-                await initWorkerForQueue(que)
-            }
+            await initLoadingArrayQ();
 
-            console.log(afterQueue)
+            console.log(afterQueue);
         }
         catch(e) {
             console.log('e', e);
