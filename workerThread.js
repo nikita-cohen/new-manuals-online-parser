@@ -71,7 +71,7 @@ function getThirdData(obj) {
         }
 
         const $ = cheerio.load(data.data);
-        const obj = {};
+        const objToInsert = {};
 
         const brand = $(`#brands-list > div.brands > ul > li`);
         const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`);
