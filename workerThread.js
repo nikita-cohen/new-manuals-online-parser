@@ -59,7 +59,6 @@ parentPort.on('message', async (message) => {
     }
     if (message.message === "second") {
         const data = await getSecondData(message);
-        console.log(message.messagePort)
         message?.messagePort?.postMessage(data);
     }
 });
