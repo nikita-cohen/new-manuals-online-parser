@@ -77,7 +77,7 @@ function initWorker(url , idx) {
     return new Promise((resolve, reject) => {
         const {worker, channels} = workers[idx];
 
-        worker.postMessage({message : "first", url, host : hostObj[Math.floor(Math.random() * hostObj.length)], messagePort: channels.port1 }, [channels.port1]);
+        worker.postMessage({message : "first", url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
 
         channels.port2.on('message', async (message) => {
             if (message.message === "done") {
