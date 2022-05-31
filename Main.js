@@ -77,21 +77,21 @@ function initWorker(url , idx) {
     return new Promise((resolve, reject) => {
         const {worker, channels} = workers[idx];
 
-        worker.postMessage({message : "first", url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
+        worker.postMessage({message : "first", url, host : hostObj});
 
-        channels.port2.on('message', async (message) => {
+        worker.on('message', async (message) => {
             console.log(message.message)
             if (message.message === "done") {
                 queue = [...queue, ...message.hrefs];
                 if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port1 }, [channels.port2]);
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 }
             }
 
             if (message.message === "done2") {
                 queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
-                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj, messagePort: channels.port1}, [channels.port2]);
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
                     resolve(message)
                 }

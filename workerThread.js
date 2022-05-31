@@ -55,10 +55,10 @@ function getSecondData(obj) {
 parentPort.on('message', async (message) => {
     if (message.message === "first") {
         const data = await getFirstData(message);
-        message?.messagePort?.postMessage(data);
+        parentPort.postMessage(data);
     }
     if (message.message === "second") {
         const data = await getSecondData(message);
-        message?.messagePort?.postMessage(data);
+        parentPort.postMessage(data);
     }
 });
