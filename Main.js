@@ -104,6 +104,7 @@ async function initWorkerForQueue(url) {
 
         worker.on('message', (message) => {
             if (message.message === "done") {
+                console.log(message.hrefs)
                 afterQueue = [...afterQueue, ...message.hrefs];
             }
             resolve(message);
