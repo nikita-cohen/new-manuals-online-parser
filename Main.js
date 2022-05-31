@@ -98,6 +98,8 @@ function initWorker(url , idx) {
 async function initWorkerForQueue(url, idx) {
     return new Promise((resolve, reject) => {
 
+        console.log("ok")
+
         const {worker, channels} = workers[idx];
 
         worker.postMessage({url, host : hostObj, messagePort: channels.port1 }, [channels.port1]);
@@ -139,6 +141,7 @@ function loadArrayQ () {
 
 async function initLoadingArrayQ () {
     console.time('image_array');
+    console.log("start");
     await loadArrayQ();
     console.timeEnd('image_array');
 }
