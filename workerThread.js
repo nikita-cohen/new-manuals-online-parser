@@ -83,7 +83,7 @@ function getThirdData(obj) {
             const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
 
 
-            console.log(brand[0], category[0])
+            console.log({brand, category})
             resolve({message : "done3"});
 
         } catch (e) {
