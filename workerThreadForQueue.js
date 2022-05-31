@@ -6,15 +6,15 @@ function getData(obj) {
     return new Promise(async (resolve, reject) =>  {
         let data;
         try {
-            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.proxy.length)]);
+            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
         } catch (e) {
             try {
-                data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.proxy.length)]);
+                data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
             } catch (e) {
                 try {
-                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.proxy.length)]);
+                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                 } catch (e) {
-                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.proxy.length)]);
+                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                 }
 
             }
@@ -37,6 +37,7 @@ function getData(obj) {
 
 
 parentPort.on('message', async (message) => {
+    console.log(message.url)
     const data = await getData(message);
     message?.messagePort?.postMessage(data);
 });

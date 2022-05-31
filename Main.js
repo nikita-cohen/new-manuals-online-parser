@@ -5,6 +5,7 @@ const path = require("path");
 const express = require('express');
 const app = express();
 
+let count = 0;
 let AMOUNT = 20;
 let workers = [];
 const data = [
@@ -59,9 +60,9 @@ function createProxyHost() {
     })
 }
 
-function createWorkers (path) {
+function createWorkers (patha) {
     for (let i = 0; i < AMOUNT; i++) {
-        const w = new Worker(path);
+        const w = new Worker(path.resolve(patha));
         const subChannel = new MessageChannel();
         workers.push({
             worker: w,
@@ -91,7 +92,7 @@ function initWorker(url , idx) {
             reject(error);
         })
         worker.on("exit", (code) => {
-            console.log("exit", code)
+            if (code !== 0) reject(new Error("something go wrong"));
         })
     })
 }
@@ -99,7 +100,8 @@ function initWorker(url , idx) {
 async function initWorkerForQueue(url, idx) {
     return new Promise((resolve, reject) => {
 
-        console.log("ok")
+        console.log("ok" + count);
+        count++;
 
         const {worker, channels} = workers[idx];
 
@@ -156,12 +158,15 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+            console.log("one",workers.length)
 
             workers = [];
             AMOUNT = queue.length;
 
             createWorkers("./workerThreadForQueue.js")
 
+            console.log(queue.length)
+            console.log("two", workers.length)
             await initLoadingArrayQ();
 
             console.log(afterQueue);
