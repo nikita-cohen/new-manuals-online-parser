@@ -100,7 +100,7 @@ function initWorker(url , idx) {
 async function initWorkerForQueue(url, idx) {
     return new Promise((resolve, reject) => {
 
-        console.log("ok" + count);
+        console.log("ok" + idx);
         count++;
 
         const {worker, channels} = workers[idx];
