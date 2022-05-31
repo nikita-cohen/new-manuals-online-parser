@@ -138,7 +138,6 @@ function initWorker(url , idx) {
                 if (queue.length > 0) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
-                    console.log(queue2)
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 }
             }
@@ -164,6 +163,35 @@ function initWorker(url , idx) {
     })
 }
 
+function initThirdWorker(url , idx) {
+    return new Promise((resolve, reject) => {
+        const {worker, channels} = workers[idx];
+
+        worker.postMessage({message : "third", url, host : hostObj});
+
+        worker.on('message', async (message) => {
+            console.log(message.message)
+
+            if (message.message === "done3") {
+                console.log(queue2.length)
+                if (queue2.length > 0) {
+                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+                } else {
+                    resolve(message);
+                }
+            }
+        });
+
+        worker.on('error', error => {
+            reject(error);
+        })
+
+        worker.on("exit", (code) => {
+            if (code !== 0) reject(new Error("something go wrong"));
+        })
+    })
+}
+
 
 function loadArray () {
     return new Promise((resolve, reject) => {
@@ -172,19 +200,42 @@ function loadArray () {
 }
 
 async function initLoadingArray () {
-    console.time('image_array');
+    console.time('parsing_array');
     await loadArray();
-    console.timeEnd('image_array');
+    console.timeEnd('parsing_array');
+}
+
+function loadArrayQ () {
+    return new Promise((resolve, reject) => {
+        Promise.all(queue2.map((q, index) => {
+            if (index < 50) {
+                return initThirdWorker(q, index)
+            }
+
+        })).then(resolve).catch(reject);
+    });
+}
+
+async function initLoadingArrayQ () {
+    console.time('parsing_array');
+    await loadArrayQ();
+    console.timeEnd('parsing_array');
 }
 
 function init () {
     app.listen(3006, async() => {
         try {
-            console.log('listening port 3006');
             createProxyHost();
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+
+            workers = []
+            AMOUNT = 50;
+
+            createWorkers("./workerThread.js")
+
+            await initLoadingArrayQ();
 
         }
         catch(e) {

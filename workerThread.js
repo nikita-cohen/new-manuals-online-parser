@@ -85,7 +85,7 @@ function getThirdData(obj) {
             const finalObjectsArray = [];
 
             for (let i = 0; i < finalObject.length; i++) {
-                finalObjectsArray.push({brand, category, "url":  $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()});
+                finalObjectsArray.push({brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()});
             }
 
             finalObjectsArray.forEach(obj => {
