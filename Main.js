@@ -107,20 +107,15 @@ function createProxyHost() {
 function createWorkers (patha) {
     for (let i = 0; i < AMOUNT; i++) {
         const w = new Worker(path.resolve(patha));
-        const subChannel = new MessageChannel();
         workers.push({
-            worker: w,
-            channels: {
-                port1: subChannel.port1,
-                port2: subChannel.port2,
-            }
+            worker: w
         });
     }
 }
 
 function initWorker(url , idx) {
     return new Promise((resolve, reject) => {
-        const {worker, channels} = workers[idx];
+        const {worker} = workers[idx];
 
         worker.postMessage({message : "first", url, host : hostObj});
 
