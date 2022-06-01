@@ -88,10 +88,16 @@ function getThirdData(obj) {
                 finalObjectsArray.push({brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()});
             }
 
-            resolve({message : "done3", objects : finalObjectsArray});
+            finalObjectsArray.forEach((obj, index) => {
+                axios.post("https://search.findmanual.guru/manual/search/insert", obj)
+                    .then(data => console.log("ok " + index))
+                    .catch(e => console.log(e));
+            })
+
+            resolve({message : "done3"});
 
         } catch (e) {
-            resolve({message : "done3", objects : []});
+            resolve({message : "done3"});
         }
     })
 
