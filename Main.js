@@ -1,12 +1,10 @@
-const {Worker, workerData} = require("worker_threads");
-const {MessageChannel} = require("node:worker_threads");
+const {Worker} = require("worker_threads");
 const axios = require("axios");
 const path = require("path");
 const express = require('express');
 const app = express();
 
-let AMOUNT = 20;
-let workers = [];
+
 const data = [
     "http://babycare.manualsonline.com/",
     "http://caraudio.manualsonline.com/",
@@ -28,6 +26,8 @@ const data = [
     "http://powertool.manualsonline.com/",
     "http://tv.manualsonline.com/",
     "http://videogame.manualsonline.com/"];
+let AMOUNT = 20;
+let workers = [];
 let queue = [];
 let queue2 = [];
 let userAgent = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246', 'Accept-Language' : '*'}
@@ -107,9 +107,7 @@ function createProxyHost() {
 function createWorkers (patha) {
     for (let i = 0; i < AMOUNT; i++) {
         const w = new Worker(path.resolve(patha));
-        workers.push({
-            worker: w
-        });
+        workers.push({worker: w});
     }
 }
 
@@ -159,7 +157,6 @@ function initWorker(url , idx) {
     })
 }
 
-
 function loadArray () {
     return new Promise((resolve, reject) => {
         Promise.all(data.map(initWorker)).then(resolve).catch(reject);
@@ -172,6 +169,28 @@ async function initLoadingArray () {
     console.timeEnd('parsing_array');
 }
 
+function resetAtMidnight() {
+    let now = new Date();
+    let night = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0, 0, 0
+    );
+
+    let msToMidnight = night.getTime() - now.getTime();
+    setTimeout(async function() {
+        queue = [];
+        queue2 = [];
+        workers = [];
+        hostObj = [];
+        createProxyHost();
+        createWorkers("./workerThread.js");
+
+        await initLoadingArray();
+        resetAtMidnight();
+    }, msToMidnight);
+}
 
 function init () {
     app.listen(3006, async() => {
@@ -180,6 +199,8 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+
+            resetAtMidnight();
         }
         catch(e) {
             console.log('e', e);
