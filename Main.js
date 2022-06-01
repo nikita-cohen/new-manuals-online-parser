@@ -30,6 +30,7 @@ const data = [
     "http://videogame.manualsonline.com/"];
 let queue = [];
 let queue2 = [];
+let result = [];
 let userAgent = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246', 'Accept-Language' : '*'}
     , {'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36", 'Accept-Language' : '*'},
     {'User-Agent' : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9", 'Accept-Language' : '*'},
@@ -139,41 +140,21 @@ function initWorker(url , idx) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
-                    resolve(message);
                 }
             }
-
-        });
-
-
-        worker.on('error', error => {
-            reject(error);
-        })
-
-        worker.on("exit", (code) => {
-            if (code !== 0) reject(new Error("something go wrong"));
-        })
-    })
-}
-
-function initThirdWorker(url , idx) {
-    return new Promise((resolve, reject) => {
-        const {worker, channels} = workers[idx];
-
-        worker.postMessage({message : "third", url, host : hostObj});
-
-        worker.on('message', async (message) => {
-            console.log(message.message)
 
             if (message.message === "done3") {
                 console.log(queue2.length)
                 if (queue2.length > 0) {
+                    result = [...result, message.objects]
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
                 } else {
                     resolve(message);
                 }
             }
+
         });
+
 
         worker.on('error', error => {
             reject(error);
@@ -198,22 +179,6 @@ async function initLoadingArray () {
     console.timeEnd('parsing_array');
 }
 
-function loadArrayQ () {
-    return new Promise((resolve, reject) => {
-        Promise.all(queue2.map((q, index) => {
-            if (index < 50) {
-                return initThirdWorker(queue2.shift(), index)
-            }
-
-        })).then(resolve).catch(reject);
-    });
-}
-
-async function initLoadingArrayQ () {
-    console.time('parsing_array');
-    await loadArrayQ();
-    console.timeEnd('parsing_array');
-}
 
 function init () {
     app.listen(3006, async() => {
@@ -222,14 +187,6 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
-
-            workers = []
-            AMOUNT = 50;
-
-            createWorkers("./workerThread.js")
-
-            await initLoadingArrayQ();
-
         }
         catch(e) {
             console.log('e', e);
