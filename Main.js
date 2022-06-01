@@ -187,6 +187,8 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+
+            console.log(result);
         }
         catch(e) {
             console.log('e', e);
