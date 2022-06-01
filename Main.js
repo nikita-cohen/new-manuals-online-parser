@@ -132,8 +132,30 @@ function initWorker(url , idx) {
                     worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
                     worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+                    resolve(message);
                 }
             }
+
+        });
+
+
+        worker.on('error', error => {
+            reject(error);
+        })
+
+        worker.on("exit", (code) => {
+            if (code !== 0) reject(new Error("something go wrong"));
+        })
+    })
+}
+
+function initWorkerForParse(url , idx) {
+    return new Promise((resolve, reject) => {
+        const {worker} = workers[idx];
+
+        worker.postMessage({message : "third", url, host : hostObj});
+
+        worker.on('message', async (message) => {
 
             if (message.message === "done3") {
                 console.log(queue2.length)
@@ -143,9 +165,7 @@ function initWorker(url , idx) {
                     resolve(message);
                 }
             }
-
         });
-
 
         worker.on('error', error => {
             reject(error);
@@ -169,6 +189,22 @@ async function initLoadingArray () {
     console.timeEnd('parsing_array');
 }
 
+function loadArrayQ () {
+    return new Promise((resolve, reject) => {
+        Promise.all(queue2.map((url, index) => {
+            if (index < 50) {
+                return initWorkerForParse(queue2.shift(), index)
+            }
+        })).then(resolve).catch(reject);
+    });
+}
+
+async function initLoadingArrayQ () {
+    console.time('parsing_array');
+    await loadArrayQ();
+    console.timeEnd('parsing_array');
+}
+
 function resetAtMidnight() {
     let now = new Date();
     let night = new Date(
@@ -188,6 +224,13 @@ function resetAtMidnight() {
         createWorkers("./workerThread.js");
 
         await initLoadingArray();
+
+        workers = []
+        AMOUNT = 65;
+
+        createWorkers("./workerThread.js")
+
+        await initLoadingArrayQ();
         resetAtMidnight();
     }, msToMidnight);
 }
@@ -199,6 +242,13 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+
+            workers = []
+            AMOUNT = 65;
+
+            createWorkers("./workerThread.js")
+
+            await initLoadingArrayQ();
 
             resetAtMidnight();
         }
