@@ -82,17 +82,13 @@ function getThirdData(obj) {
             const category = $(`#left-sidebar-nav > div.brands.brand > ul > li`).text().replace(/[^a-zA-Z0-9 ]/g, '').trim();
 
             const finalObject = $("div.col-md-8.col-sm-8.col-xs-7 > h5");
-            const finalObjectsArray = [];
 
             for (let i = 0; i < finalObject.length; i++) {
-                finalObjectsArray.push({brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()});
+                console.log({id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
+                // axios.post("https://search.findmanual.guru/manual/search/insert", {id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
+                //     .then(data => console.log("ok " + index))
+                //     .catch(e => console.log(e));
             }
-
-            finalObjectsArray.forEach((obj, index) => {
-                axios.post("https://search.findmanual.guru/manual/search/insert", obj)
-                    .then(data => console.log("ok " + index))
-                    .catch(e => console.log(e));
-            })
 
             resolve({message : "done3"});
 
