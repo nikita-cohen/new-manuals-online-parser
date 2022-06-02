@@ -84,7 +84,7 @@ function getThirdData(obj) {
             const finalObject = $("div.col-md-8.col-sm-8.col-xs-7 > h5");
 
             for (let i = 0; i < finalObject.length; i++) {
-                console.log({id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
+                console.log({id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replaceAll(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
                 // axios.post("https://search.findmanual.guru/manual/search/insert", {id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
                 //     .then(data => console.log("ok " + index))
                 //     .catch(e => console.log(e));
