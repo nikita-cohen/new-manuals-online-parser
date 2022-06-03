@@ -175,7 +175,7 @@ function resetAtMidnight() {
         now.getFullYear(),
         now.getMonth(),
         now.getDate() + 1,
-        3, 0, 0
+        6, 0, 0
     );
 
     let msToMidnight = night.getTime() - now.getTime();
