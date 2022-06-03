@@ -195,11 +195,6 @@ function resetAtMidnight() {
 function init () {
     app.listen(3006, async() => {
         try {
-            createProxyHost();
-            createWorkers("./workerThread.js");
-
-            await initLoadingArray();
-
             resetAtMidnight();
         }
         catch(e) {
