@@ -5,31 +5,31 @@ const express = require('express');
 const app = express();
 
 
-let queue = [
-    { url : "http://babycare.manualsonline.com/", type : "brand"},
-    { url : "http://caraudio.manualsonline.com/", type : "brand"},
-    { url : "http://cellphone.manualsonline.com/", type : "brand"},
-    { url : "http://phone.manualsonline.com/", type : "brand"},
-    { url : "http://office.manualsonline.com/", type : "brand"},
-    { url : "http://fitness.manualsonline.com/", type : "brand"},
-    { url : "http://audio.manualsonline.com/", type : "brand"},
-    { url : "http://homeappliance.manualsonline.com/", type : "brand"},
-    { url : "http://kitchen.manualsonline.com/", type : "brand"},
-    { url : "http://laundry.manualsonline.com/", type : "brand"},
-    { url : "http://lawnandgarden.manualsonline.com/", type : "brand"},
-    { url : "http://marine.manualsonline.com/", type : "brand"},
-    { url : "http://music.manualsonline.com/", type : "brand"},
-    { url : "http://outdoorcooking.manualsonline.com/", type : "brand"},
-    { url : "http://personalcare.manualsonline.com/", type : "brand"},
-    { url : "http://camera.manualsonline.com/", type : "brand"},
-    { url : "http://portablemedia.manualsonline.com/", type : "brand"},
-    { url : "http://powertool.manualsonline.com/", type : "brand"},
-    { url : "http://tv.manualsonline.com/", type : "brand"},
-    { url : "http://videogame.manualsonline.com/", type : "brand"}
-];
+const data = [
+    "http://babycare.manualsonline.com/",
+    "http://caraudio.manualsonline.com/",
+    "http://cellphone.manualsonline.com/",
+    "http://phone.manualsonline.com/",
+    "http://office.manualsonline.com/",
+    "http://fitness.manualsonline.com/",
+    "http://audio.manualsonline.com/",
+    "http://homeappliance.manualsonline.com/",
+    "http://kitchen.manualsonline.com/",
+    "http://laundry.manualsonline.com/",
+    "http://lawnandgarden.manualsonline.com/",
+    "http://marine.manualsonline.com/",
+    "http://music.manualsonline.com/",
+    "http://outdoorcooking.manualsonline.com/",
+    "http://personalcare.manualsonline.com/",
+    "http://camera.manualsonline.com/",
+    "http://portablemedia.manualsonline.com/",
+    "http://powertool.manualsonline.com/",
+    "http://tv.manualsonline.com/",
+    "http://videogame.manualsonline.com/"];
 let AMOUNT = 20;
-let randomNumbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 let workers = [];
+let queue = [];
+let queue2 = [];
 let userAgent = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246', 'Accept-Language' : '*'}
     , {'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36", 'Accept-Language' : '*'},
     {'User-Agent' : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9", 'Accept-Language' : '*'},
@@ -115,27 +115,37 @@ function initWorker(url , idx) {
     return new Promise((resolve, reject) => {
         const {worker} = workers[idx];
 
-        worker.postMessage({message : "run", url, host : hostObj});
+        worker.postMessage({message : "first", url, host : hostObj});
 
         worker.on('message', async (message) => {
-
-            if (message.message === "done" && message.isForDb === false) {
+            console.log(message.message)
+            if (message.message === "done") {
+                queue = [...queue, ...message.hrefs];
                 if (queue.length > 0) {
-                    queue = [...queue, ...message.hrefs]
-                    worker.postMessage({message : "run" , url : queue.shift(), host : hostObj});
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 }
             }
 
-            if (message.message === "done" && message.isForDb === true) {
+            if (message.message === "done2") {
+                queue2 = [...queue2, ...message.hrefs];
                 if (queue.length > 0) {
-                    console.log(queue.length)
-                    worker.postMessage({message : "run" , url : queue.shift(), host : hostObj});
+                    worker.postMessage({message : "second", url : queue.shift(), host : hostObj});
                 } else {
-                    resolve(message)
+                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+                }
+            }
+
+            if (message.message === "done3") {
+                console.log(queue2.length)
+                if (queue2.length > 0) {
+                    worker.postMessage({message : "third", url : queue2.shift(), host : hostObj});
+                } else {
+                    resolve(message);
                 }
             }
 
         });
+
 
         worker.on('error', error => {
             reject(error);
@@ -149,12 +159,7 @@ function initWorker(url , idx) {
 
 function loadArray () {
     return new Promise((resolve, reject) => {
-        Promise.all(randomNumbers.map((d, i) => {
-            if (i < 19) {
-                console.log(i)
-                return initWorker(queue.shift(), i)  ;
-            }
-        })).then(resolve).catch(reject);
+        Promise.all(data.map(initWorker)).then(resolve).catch(reject);
     });
 }
 
@@ -164,26 +169,28 @@ async function initLoadingArray () {
     console.timeEnd('parsing_array');
 }
 
-// function resetAtMidnight() {
-//     let now = new Date();
-//     let night = new Date(
-//         now.getFullYear(),
-//         now.getMonth(),
-//         now.getDate() + 1,
-//         6, 0, 0
-//     );
-//
-//     let msToMidnight = night.getTime() - now.getTime();
-//     setTimeout(async function() {
-//         workers = [];
-//         hostObj = [];
-//         createProxyHost();
-//         createWorkers("./workerThread.js");
-//
-//         await initLoadingArray();
-//         resetAtMidnight();
-//     }, msToMidnight);
-// }
+function resetAtMidnight() {
+    let now = new Date();
+    let night = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        6, 0, 0
+    );
+
+    let msToMidnight = night.getTime() - now.getTime();
+    setTimeout(async function() {
+        queue = [];
+        queue2 = [];
+        workers = [];
+        hostObj = [];
+        createProxyHost();
+        createWorkers("./workerThread.js");
+
+        await initLoadingArray();
+        resetAtMidnight();
+    }, msToMidnight);
+}
 
 function init () {
     app.listen(3006, async() => {
@@ -192,6 +199,7 @@ function init () {
             createWorkers("./workerThread.js");
 
             await initLoadingArray();
+            resetAtMidnight();
         }
         catch(e) {
             console.log('e', e);
