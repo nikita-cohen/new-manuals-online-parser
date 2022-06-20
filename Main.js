@@ -150,7 +150,7 @@ function initWorker(url , idx) {
 function loadArray () {
     return new Promise((resolve, reject) => {
         Promise.all(randomNumbers.map((d, i) => {
-            if (i < 20) {
+            if (i < 19) {
                 console.log(i)
                 return initWorker(queue.shift(), i)  ;
             }
