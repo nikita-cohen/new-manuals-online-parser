@@ -1,7 +1,15 @@
 const {parentPort} = require("worker_threads");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const manualSchema = require("./service/SearchService");
 
+const mongoose = require('mongoose');
+
+
+mongoose.connect('mongodb://localhost:27017/findManual-complete-four').then()
+    .catch(e => {
+        console.log(e)
+    })
 
 function getFirstData(obj) {
     return new Promise(async (resolve, reject) => {
@@ -13,10 +21,10 @@ function getFirstData(obj) {
         const hrefArray = [];
 
         for (let i = 0; i < href.length; i++) {
-            hrefArray.push({url : obj.url.slice(0, -1) + $(href[i]).children("a").attr('href'), type : "category"});
+            hrefArray.push(obj.url.slice(0, -1) + $(href[i]).children("a").attr('href'));
         }
 
-        resolve({hrefs : hrefArray, message : "done", isForDb : false});
+        resolve({hrefs : hrefArray, message : "done"});
     })
 }
 
@@ -45,10 +53,11 @@ function getSecondData(obj) {
         const elementArray = [];
 
         for (let i = 0; i < element.length; i++) {
-            elementArray.push({url : "http://www.manualsonline.com" + $(element[i]).children("a").attr('href'), type : "lastUrl"});
+            elementArray.push("http://www.manualsonline.com" + $(element[i]).children("a").attr('href'));
         }
 
-        resolve({hrefs : elementArray, message : "done", isForDb : false});
+        console.log("ok")
+        resolve({hrefs : elementArray, message : "done2"});
     })
 
 }
@@ -84,16 +93,15 @@ function getThirdData(obj) {
             const finalObject = $("div.col-md-8.col-sm-8.col-xs-7 > h5");
 
             for (let i = 0; i < finalObject.length; i++) {
-                //console.log({id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replaceAll(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
-                axios.post("https://search.findmanual.guru/manual/search/insert", {id : $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim().replaceAll(' ', '_') , brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
+                manualSchema.addManual({brand, category, "url":  "http://www.manualsonline.com" + $(finalObject[i]).children("a").attr('href'), "title": $(finalObject[i]).children("a").text().replace(/[^a-zA-Z0-9 ]/g, '').trim()})
                     .then(data => console.log("ok " + i))
                     .catch(e => console.log(e));
             }
 
-            resolve({message : "done", isForDb : true});
+            resolve({message : "done3"});
 
         } catch (e) {
-            resolve({message : "done", isForDb : true});
+            resolve({message : "done3"});
         }
     })
 
@@ -101,20 +109,17 @@ function getThirdData(obj) {
 
 
 parentPort.on('message', async (message) => {
-    if (message.message === "run") {
-        if (message.type === "brand") {
-            const data = await getFirstData(message);
-            parentPort.postMessage(data);
-        }
+    if (message.message === "first") {
+        const data = await getFirstData(message);
+        parentPort.postMessage(data);
+    }
+    if (message.message === "second") {
+        const data = await getSecondData(message);
+        parentPort.postMessage(data);
+    }
 
-        if (message.type === "category") {
-            const data = await getSecondData(message);
-            parentPort.postMessage(data);
-        }
-
-        if (message.type === "lastUrl") {
-            const data = await getThirdData(message);
-            parentPort.postMessage(data);
-        }
+    if (message.message === "third") {
+        const data = await getThirdData(message);
+        parentPort.postMessage(data);
     }
 });
