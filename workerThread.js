@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost:27017/findManual-complete-four').then()
 
 function getFirstData(obj) {
     return new Promise(async (resolve, reject) => {
-        let data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+        let data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
 
         const $ = cheerio.load(data.data);
 
@@ -20,7 +20,7 @@ function getFirstData(obj) {
         const hrefArray = [];
 
         for (let i = 0; i < href.length; i++) {
-            hrefArray.push({url : obj.url.slice(0, -1) + $(href[i]).children("a").attr('href'), type : "category"});
+            hrefArray.push({url : obj.url.url.slice(0, -1) + $(href[i]).children("a").attr('href'), type : "category"});
         }
 
         resolve({hrefs : hrefArray, message : "done", isForDb : false});
@@ -32,15 +32,15 @@ function getSecondData(obj) {
         let data;
 
         try {
-            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+            data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
         } catch (e) {
             try {
-                data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
             } catch (e) {
                 try {
-                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                    data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                 } catch (e) {
-                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                    data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                 }
 
             }
@@ -68,18 +68,18 @@ function getThirdData(obj) {
         try {
             let data;
             try {
-                data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
             } catch (e) {
                 try {
-                    data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                    data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                 } catch (e) {
                     try {
-                        data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                        data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                     } catch (e) {
                         try {
-                            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                            data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                         } catch (e) {
-                            data = await axios.get(obj.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
+                            data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
                         }
                     }
 
@@ -112,17 +112,17 @@ function getThirdData(obj) {
 
 parentPort.on('message', async (message) => {
     if (message.message === "run") {
-        if (message.type === "brand") {
+        if (message.url.type === "brand") {
             const data = await getFirstData(message);
             parentPort.postMessage(data);
         }
 
-        if (message.type === "category") {
+        if (message.url.type === "category") {
             const data = await getSecondData(message);
             parentPort.postMessage(data);
         }
 
-        if (message.type === "lastUrl") {
+        if (message.url.type === "lastUrl") {
             const data = await getThirdData(message);
             parentPort.postMessage(data);
         }
