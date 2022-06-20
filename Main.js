@@ -121,7 +121,7 @@ function initWorker(url , idx) {
 
             if (message.message === "done" && message.isForDb === false) {
                 if (queue.length > 0) {
-                    queue = [...queue, ...message.result]
+                    queue = [...queue, ...message.hrefs]
                     worker.postMessage({message : "run" , url : queue.shift()});
                 }
             }
