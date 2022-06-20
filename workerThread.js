@@ -12,6 +12,7 @@ mongoose.connect('mongodb://localhost:27017/findManual-complete-four').then()
 
 function getFirstData(obj) {
     return new Promise(async (resolve, reject) => {
+
         let data = await axios.get(obj.url.url, obj.host[Math.floor(Math.random() * obj.host.length)]);
 
         const $ = cheerio.load(data.data);
@@ -22,6 +23,8 @@ function getFirstData(obj) {
         for (let i = 0; i < href.length; i++) {
             hrefArray.push({url : obj.url.url.slice(0, -1) + $(href[i]).children("a").attr('href'), type : "category"});
         }
+
+        console.log("ok")
 
         resolve({hrefs : hrefArray, message : "done", isForDb : false});
     })
