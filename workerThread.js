@@ -17,7 +17,6 @@ function getFirstData(obj) {
 
         const $ = cheerio.load(data.data);
 
-        console.log(data.data)
 
         const href = $("h5.seeprices-header");
         const hrefArray = [];
@@ -123,7 +122,6 @@ parentPort.on('message', async (message) => {
         }
 
         if (message.url.type === "category") {
-            console.log("here")
             const data = await getSecondData(message);
             parentPort.postMessage(data);
         }

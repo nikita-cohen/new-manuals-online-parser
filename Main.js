@@ -122,14 +122,14 @@ function initWorker(url , idx) {
             if (message.message === "done" && message.isForDb === false) {
                 if (queue.length > 0) {
                     queue = [...queue, ...message.hrefs]
-                    worker.postMessage({message : "run" , url : queue.shift()});
+                    worker.postMessage({message : "run" , url : queue.shift(), host : hostObj});
                 }
             }
 
             if (message.message === "done" && message.isForDb === true) {
                 if (queue.length > 0) {
                     console.log(queue.length)
-                    worker.postMessage({message : "run" , url : queue.shift()});
+                    worker.postMessage({message : "run" , url : queue.shift(), host : hostObj});
                 } else {
                     resolve(message)
                 }
