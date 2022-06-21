@@ -175,7 +175,7 @@ function resetAtMidnight() {
         now.getFullYear(),
         now.getMonth(),
         now.getDate() + 1,
-        6, 0, 0
+        0, 0, 0
     );
 
     let msToMidnight = night.getTime() - now.getTime();
@@ -198,7 +198,6 @@ function init () {
             createProxyHost();
             createWorkers("./workerThread.js");
 
-            await initLoadingArray();
             resetAtMidnight();
         }
         catch(e) {
